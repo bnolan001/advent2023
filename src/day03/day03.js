@@ -3,7 +3,7 @@ let fs = require("fs");
 function buildArray(dataArray) {
   const array = [];
   dataArray.forEach((element) => {
-    const row = [];
+    const row = [0]; // pad begining of row with 0
     let number = 0;
 
     element.split("").forEach((char) => {
@@ -13,7 +13,6 @@ function buildArray(dataArray) {
         row.push(">");
       } else {
         if (number > 0) {
-          const numLength = number.toString().length;
           row[row.length - 1] = number;
           number = 0;
         }
@@ -24,6 +23,7 @@ function buildArray(dataArray) {
         }
       }
     });
+    row.push(0); // pad end of row with 0
     array.push(row);
   });
   const rowSize = array[0].length;
@@ -33,12 +33,35 @@ function buildArray(dataArray) {
   return array;
 }
 
-function getNumericValue(value) {
-  if (value === "+") {
-    return 0;
-  } else {
-    return value;
+function getNumericValue(data, indices) {
+  let sum = 0;
+  const keys = Object.keys(indices);
+  for (let ct = 0; ct < keys.length; ct++) {
+    index = indices[keys[ct]];
+    const value = data[index[0]][index[1]];
+    if (Number.isInteger(value) && value > 0) {
+      sum += data[index[0]][index[1]];
+      console.log("Found a number", value);
+    } else if (value === ">") {
+      let foundNumber = false;
+      for (let col = index[1]; col < data[index[0]].length; col++) {
+        if (Number.isInteger(data[index[0]][col])) {
+          sum += data[index[0]][col];
+          console.log("Found a number", data[index[0]][col]);
+          foundNumber = true;
+        }
+        if (`${index[0]}-${col}` in indices) {
+          // Remove the index from the object so we don't do the number twice
+          indices[`${index[0]}-${col}`] = [0, 0];
+          //ct--;
+        }
+        if (foundNumber) {
+          break;
+        }
+      }
+    }
   }
+  return sum;
 }
 
 function day03Part01(data) {
@@ -46,25 +69,25 @@ function day03Part01(data) {
   const dataArray = buildArray(splitData);
   console.log(dataArray);
   let result = 0;
-  for (let i = 1; i < dataArray.length; i++) {
-    for (let j = 0; j < dataArray[i].length; j++) {
+  for (let i = 1; i < dataArray.length - 1; i++) {
+    for (let j = 1; j < dataArray[i].length - 1; j++) {
+      // We found a summation symbol
       if (dataArray[i][j] === "+") {
         let sum = 0;
-        // Get numbers to the left
-        if (j > 0) {
-          sum += getNumericValue(dataArray[i - 1][j - 1]);
-          sum += getNumericValue(dataArray[i][j - 1]);
-          sum += getNumericValue(dataArray[i + 1][j - 1]);
-        }
-        // Get numbers above and below
-        sum += getNumericValue(dataArray[i - 1][j]);
-        sum += getNumericValue(dataArray[i + 1][j]);
-        // Get numbers to the right
+        // Create grid of indexes to check
+        const indices = {};
+        indices[`${i - 1}-${j - 1}`] = [i - 1, j - 1];
+        indices[`${i}-${j - 1}`] = [i, j - 1];
+        indices[`${i + 1}-${j - 1}`] = [i + 1, j - 1];
 
-        sum += getNumericValue(dataArray[i - 1][j + 1]);
-        sum += getNumericValue(dataArray[i][j + 1]);
-        sum += getNumericValue(dataArray[i + 1][j + 1]);
-        console.log(sum);
+        indices[`${i - 1}-${j}`] = [i - 1, j];
+        indices[`${i + 1}-${j}`] = [i + 1, j];
+
+        indices[`${i - 1}-${j + 1}`] = [i - 1, j + 1];
+        indices[`${i}-${j + 1}`] = [i, j + 1];
+        indices[`${i + 1}-${j + 1}`] = [i + 1, j + 1];
+        sum = getNumericValue(dataArray, indices);
+        //console.log(sum);
         result += sum;
       }
     }
@@ -77,8 +100,8 @@ let result = day03Part01(input);
 console.log("Part 1 Sample Result", result);
 
 input = fs.readFileSync("./data.txt", "utf8").toString();
-//result = day03Part01(input);
-//console.log("Part 1 Result", result);
+result = day03Part01(input);
+console.log("Part 1 Result", result);
 //---------------------------------------------------------------
 
 function day03Part02(data) {
