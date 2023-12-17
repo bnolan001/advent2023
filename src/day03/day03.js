@@ -23,6 +23,9 @@ function buildArray(dataArray) {
         }
       }
     });
+    if (number > 0) {
+      row[row.length - 1] = number;
+    }
     row.push(0); // pad end of row with 0
     array.push(row);
   });
