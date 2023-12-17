@@ -19,7 +19,11 @@ function buildArray(dataArray) {
         if (char === ".") {
           row.push(0);
         } else {
-          row.push("+");
+          if (char === "*") {
+            row.push(char);
+          } else {
+            row.push("+");
+          }
         }
       }
     });
@@ -44,13 +48,11 @@ function getNumericValue(data, indices) {
     const value = data[index[0]][index[1]];
     if (Number.isInteger(value) && value > 0) {
       sum += data[index[0]][index[1]];
-      console.log("Found a number", value);
     } else if (value === ">") {
       let foundNumber = false;
       for (let col = index[1]; col < data[index[0]].length; col++) {
         if (Number.isInteger(data[index[0]][col])) {
           sum += data[index[0]][col];
-          console.log("Found a number", data[index[0]][col]);
           foundNumber = true;
         }
         if (`${index[0]}-${col}` in indices) {
@@ -70,12 +72,12 @@ function getNumericValue(data, indices) {
 function day03Part01(data) {
   const splitData = data.split(/\r?\n/);
   const dataArray = buildArray(splitData);
-  console.log(dataArray);
+
   let result = 0;
   for (let i = 1; i < dataArray.length - 1; i++) {
     for (let j = 1; j < dataArray[i].length - 1; j++) {
       // We found a summation symbol
-      if (dataArray[i][j] === "+") {
+      if (dataArray[i][j] === "+" || dataArray[i][j] === "*") {
         let sum = 0;
         // Create grid of indexes to check
         const indices = {};
@@ -90,7 +92,6 @@ function day03Part01(data) {
         indices[`${i}-${j + 1}`] = [i, j + 1];
         indices[`${i + 1}-${j + 1}`] = [i + 1, j + 1];
         sum = getNumericValue(dataArray, indices);
-        //console.log(sum);
         result += sum;
       }
     }
@@ -107,16 +108,75 @@ result = day03Part01(input);
 console.log("Part 1 Result", result);
 //---------------------------------------------------------------
 
+function getNumericRatioValue(data, indices) {
+  let parts = [];
+  const keys = Object.keys(indices);
+
+  for (let ct = 0; ct < keys.length; ct++) {
+    index = indices[keys[ct]];
+    const value = data[index[0]][index[1]];
+    if (Number.isInteger(value) && value > 0) {
+      parts.push(data[index[0]][index[1]]);
+    } else if (value === ">") {
+      let foundNumber = false;
+      for (let col = index[1]; col < data[index[0]].length; col++) {
+        if (Number.isInteger(data[index[0]][col])) {
+          parts.push(data[index[0]][col]);
+          foundNumber = true;
+        }
+        if (`${index[0]}-${col}` in indices) {
+          // Remove the index from the object so we don't do the number twice
+          indices[`${index[0]}-${col}`] = [0, 0];
+          //ct--;
+        }
+        if (foundNumber) {
+          break;
+        }
+      }
+    }
+  }
+
+  return parts.length == 2
+    ? parts.reduce((product, current) => product * current, 1)
+    : 0;
+}
+
 function day03Part02(data) {
   const splitData = data.split(/\r?\n/);
+  const dataArray = buildArray(splitData);
+
   let result = 0;
+  for (let i = 1; i < dataArray.length - 1; i++) {
+    for (let j = 1; j < dataArray[i].length - 1; j++) {
+      // We found a summation symbol
+      if (dataArray[i][j] === "*") {
+        let sum = 0;
+        // Create grid of indexes to check
+        const indices = {};
+        indices[`${i - 1}-${j - 1}`] = [i - 1, j - 1];
+        indices[`${i}-${j - 1}`] = [i, j - 1];
+        indices[`${i + 1}-${j - 1}`] = [i + 1, j - 1];
+
+        indices[`${i - 1}-${j}`] = [i - 1, j];
+        indices[`${i + 1}-${j}`] = [i + 1, j];
+
+        indices[`${i - 1}-${j + 1}`] = [i - 1, j + 1];
+        indices[`${i}-${j + 1}`] = [i, j + 1];
+        indices[`${i + 1}-${j + 1}`] = [i + 1, j + 1];
+
+        sum = getNumericRatioValue(dataArray, indices);
+
+        result += sum;
+      }
+    }
+  }
 
   return result;
 }
-// input = fs.readFileSync("./sample.txt", "utf8").toString();
-// result = day02Part02(input);
-// console.log("Part 2 Sample Result", result);
+input = fs.readFileSync("./sample.txt", "utf8").toString();
+result = day03Part02(input);
+console.log("Part 2 Sample Result", result);
 
-// input = fs.readFileSync("./data.txt", "utf8").toString();
-// result = day03Part02(input);
-// console.log("Part 2 Result", result);
+input = fs.readFileSync("./data.txt", "utf8").toString();
+result = day03Part02(input);
+console.log("Part 2 Result", result);
