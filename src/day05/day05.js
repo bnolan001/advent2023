@@ -42,10 +42,8 @@ function buildSourceToDestinationMap(key, mapData) {
   const sourceMap = [];
   const destinationMap = [];
   mapData.forEach((row, rowIndex) => {
-    for (let i = 0; i < row[2]; i++) {
-      destinationMap.push(row[0] + i);
-      sourceMap.push(row[1] + i);
-    }
+    destinationMap.push({ start: row[0], end: row[0] - 1 + row[2] });
+    sourceMap.push({ start: row[1], end: row[1] - 1 + row[2] });
   });
   return {
     source: mapPoints[0],
@@ -72,6 +70,7 @@ function generateFullMapping(splitData) {
 function day05Part01(data) {
   const splitData = data.split(/\r?\n/);
   const seedMapping = generateFullMapping(splitData);
+  const locationValues = [];
   console.log(seedMapping);
   let result = 0;
   seedMapping.seeds.forEach((seed) => {
@@ -81,30 +80,42 @@ function day05Part01(data) {
     let sourceValue = seed;
     while (destination !== "location") {
       const sourceData = seedMapping[source];
-      const sourceIdx = sourceData.sourcePoints.indexOf(sourceValue);
+      const sourceIdx = sourceData.sourcePoints.findIndex(
+        (x) => x.start <= sourceValue && x.end >= sourceValue
+      );
       let destinationValue = -1;
       if (sourceIdx > -1) {
-        destinationValue = sourceData.destinationPoints[sourceIdx];
+        const diff = sourceValue - sourceData.sourcePoints[sourceIdx].start;
+        destinationValue = sourceData.destinationPoints[sourceIdx].start + diff;
       }
+      source = sourceData.destination;
+
       if (destinationValue > -1) {
-        destination = sourceData.destination;
         sourceValue = destinationValue;
-        source = destination;
+      }
+
+      if (source === "location") {
+        destination = "location";
+        locationValues.push(sourceValue);
+      } else {
         destination = "";
       }
-      //console.log(source, sourceValue, destination, destinationValue);
     }
   });
-
+  console.log(locationValues);
+  result = locationValues.reduce(
+    (a, b) => (a < b ? a : b),
+    Number.MAX_SAFE_INTEGER
+  );
   return result;
 }
 let input = fs.readFileSync("./sample.txt", "utf8").toString();
 let result = day05Part01(input);
 console.log("Part 1 Sample Result", result);
 
-//input = fs.readFileSync("./data.txt", "utf8").toString();
-//result = day05Part01(input);
-//console.log("Part 1 Result", result); // 42364 too high
+input = fs.readFileSync("./data.txt", "utf8").toString();
+result = day05Part01(input);
+console.log("Part 1 Result", result); // 42364 too high
 //---------------------------------------------------------------
 
 function day04Part02(data) {
