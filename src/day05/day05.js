@@ -18,7 +18,6 @@ function parseData(data) {
       mapKey = "";
       continue;
     }
-    console.log(data[i]);
 
     if (mapKey === "") {
       mapKey = data[i].replace(" map:", "");
@@ -70,11 +69,9 @@ function generateFullMapping(splitData) {
 function day05Part01(data) {
   const splitData = data.split(/\r?\n/);
   const seedMapping = generateFullMapping(splitData);
-  const locationValues = [];
-  console.log(seedMapping);
-  let result = 0;
+
+  let result = Number.MAX_SAFE_INTEGER;
   seedMapping.seeds.forEach((seed) => {
-    console.log(seed);
     let destination = "";
     let source = "seed";
     let sourceValue = seed;
@@ -96,17 +93,13 @@ function day05Part01(data) {
 
       if (source === "location") {
         destination = "location";
-        locationValues.push(sourceValue);
+        result = result > sourceValue ? sourceValue : result;
       } else {
         destination = "";
       }
     }
   });
-  console.log(locationValues);
-  result = locationValues.reduce(
-    (a, b) => (a < b ? a : b),
-    Number.MAX_SAFE_INTEGER
-  );
+
   return result;
 }
 let input = fs.readFileSync("./sample.txt", "utf8").toString();
@@ -118,16 +111,50 @@ result = day05Part01(input);
 console.log("Part 1 Result", result); // 42364 too high
 //---------------------------------------------------------------
 
-function day04Part02(data) {
+function day05Part02(data) {
   const splitData = data.split(/\r?\n/);
-  let result = 0;
+  const seedMapping = generateFullMapping(splitData);
+  let result = Number.MAX_SAFE_INTEGER;
+
+  for (let idx = 0; idx < seedMapping.seeds.length; idx += 2) {
+    let maxSeed = seedMapping.seeds[idx + 1] + seedMapping.seeds[idx] - 1;
+    for (let seed = seedMapping.seeds[idx]; seed < maxSeed; seed++) {
+      let destination = "";
+      let source = "seed";
+      let sourceValue = seed;
+      while (destination !== "location") {
+        const sourceData = seedMapping[source];
+        const sourceIdx = sourceData.sourcePoints.findIndex(
+          (x) => x.start <= sourceValue && x.end >= sourceValue
+        );
+        let destinationValue = -1;
+        if (sourceIdx > -1) {
+          const diff = sourceValue - sourceData.sourcePoints[sourceIdx].start;
+          destinationValue =
+            sourceData.destinationPoints[sourceIdx].start + diff;
+        }
+        source = sourceData.destination;
+
+        if (destinationValue > -1) {
+          sourceValue = destinationValue;
+        }
+
+        if (source === "location") {
+          destination = "location";
+          result = result > sourceValue ? sourceValue : result;
+        } else {
+          destination = "";
+        }
+      }
+    }
+  }
 
   return result;
 }
-//input = fs.readFileSync("./sample.txt", "utf8").toString();
-//result = day05Part02(input);
-//console.log("Part 2 Sample Result", result);
+input = fs.readFileSync("./sample.txt", "utf8").toString();
+result = day05Part02(input);
+console.log("Part 2 Sample Result", result);
 
-//input = fs.readFileSync("./data.txt", "utf8").toString();
-//result = day05Part02(input);
-//console.log("Part 2 Result", result);
+input = fs.readFileSync("./data.txt", "utf8").toString();
+result = day05Part02(input);
+console.log("Part 2 Result", result);
