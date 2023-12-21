@@ -1,48 +1,89 @@
 let fs = require("fs");
-const { parse } = require("path");
 
 function parseData1(data) {
   const splitData = data.split(/\r?\n/);
-  const players = [];
-  splitData.array.forEach((element) => {
-    const player = element[0].split(" ");
-    const handDetails = {
-      hand: player[0],
-      sortedHand: player[0].split("").sort().join(""),
-      wager: parseInt(player[1]),
-    };
-    players.push(handDetails);
-  });
-
-  return players;
+  const times = splitData[0]
+    .split(":")[1]
+    .split(" ")
+    .filter(Boolean)
+    .map((num) => parseInt(num));
+  const distance = splitData[1]
+    .split(":")[1]
+    .split(" ")
+    .filter(Boolean)
+    .map((num) => parseInt(num));
+  const raceData = {
+    times,
+    distance,
+    winningTimes: [],
+  };
+  return raceData;
 }
 
-function day07Part01(data) {
-  const raceData = parseData(data);
+function getHandStrength(hand) {}
+
+function day06Part01(data) {
+  const raceData = parseData1(data);
 
   let result = 0;
+  for (let raceIdx = 0; raceIdx < raceData.times.length; raceIdx++) {
+    const record = raceData.distance[raceIdx];
+    const winningHoldTimes = [];
+    for (let holdTime = 1; holdTime <= raceData.times[raceIdx]; holdTime++) {
+      const distance = holdTime * (raceData.times[raceIdx] - holdTime);
+      if (distance > record) {
+        winningHoldTimes.push(holdTime);
+      }
+    }
+    raceData.winningTimes.push(winningHoldTimes);
+  }
 
+  result = raceData.winningTimes.reduce((a, b) => a * b.length, 1);
   return result;
 }
 let input = fs.readFileSync("./sample.txt", "utf8").toString();
-let result = day07Part01(input);
+let result = day06Part01(input);
 console.log("Part 1 Sample Result", result);
 
 input = fs.readFileSync("./data.txt", "utf8").toString();
-result = day07Part01(input);
+result = day06Part01(input);
 console.log("Part 1 Result", result); // 42364 too high
 //---------------------------------------------------------------
 
-function day07Part02(data) {
-  const raceData = parseData(data);
-  let result = 0;
+function parseData2(data) {
+  const splitData = data.split(/\r?\n/);
+  let strNum = splitData[0].split(":")[1].replace(/\s/g, "");
+  const times = parseInt(strNum);
+  strNum = splitData[1].split(":")[1].replace(/\s/g, "");
+  const distance = parseInt(strNum);
+  const raceData = {
+    times,
+    distance,
+    winningTimes: [],
+  };
+  return raceData;
+}
 
+function day06Part02(data) {
+  const raceData = parseData2(data);
+  let result = 0;
+  const record = raceData.distance;
+  const winningHoldTimes = [];
+  for (let holdTime = 1; holdTime <= raceData.times; holdTime++) {
+    const distance = holdTime * (raceData.times - holdTime);
+    if (distance > record) {
+      winningHoldTimes.push(holdTime);
+    }
+    raceData.winningTimes = winningHoldTimes;
+  }
+
+  result = raceData.winningTimes.length;
   return result;
 }
 input = fs.readFileSync("./sample.txt", "utf8").toString();
-result = day07Part02(input);
+result = day06Part02(input);
 console.log("Part 2 Sample Result", result);
 
 input = fs.readFileSync("./data.txt", "utf8").toString();
-result = day07Part02(input);
+result = day06Part02(input);
 console.log("Part 2 Result", result);
