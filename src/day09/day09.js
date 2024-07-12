@@ -64,6 +64,18 @@ function generateDiffTrees(map) {
   return diffTree;
 }
 
+function addNextSequence(sequenceMap) {
+  let diffValue = 0;
+  let row = sequenceMap.length - 1;
+
+  for (let i = 1; i < sequenceMap.length; i++) {
+    sequenceMap[i].push(
+      sequenceMap[row - i][sequenceMap[i].length - 1] +
+        sequenceMap[row - i - 1][sequenceMap[row - i - 1].length - 1]
+    );
+  }
+}
+
 let input = fs.readFileSync("day09/sample1.txt", "utf8").toString();
 let result = day09Part01(input);
 console.log("Part 1 Sample Result", result);
