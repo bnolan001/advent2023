@@ -70,7 +70,7 @@ console.log("Part 1 Sample Result", result);
 console.log("---------------------------");
 input = fs.readFileSync("day09/data1.txt", "utf8").toString();
 result = day09Part01(input);
-console.log("Part 1 Result", result); // 42364 too high
+console.log("Part 1 Result", result); // 42364 too high, 1853145120 is too high
 //---------------------------------------------------------------
 
 function day09Part02Calculation(data) {}
