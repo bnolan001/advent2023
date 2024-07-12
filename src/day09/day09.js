@@ -24,7 +24,7 @@ function day09Part01(data) {
   //console.log("Diff Tree", diffTree);
 
   diffTree.forEach((diff) => {
-    //console.log("Diff", diff);
+    console.log("Diff", diff);
     let sum = 0;
     diff.forEach((sequence) => {
       sum += sequence[sequence.length - 1];
@@ -69,7 +69,7 @@ let result = day09Part01(input);
 console.log("Part 1 Sample Result", result);
 console.log("---------------------------");
 input = fs.readFileSync("day09/data1.txt", "utf8").toString();
-result = day09Part01(input);
+//result = day09Part01(input);
 console.log("Part 1 Result", result); // 42364 too high, 1853145120 is too high
 //---------------------------------------------------------------
 
