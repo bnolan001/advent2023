@@ -67,10 +67,10 @@ function generateDiffTrees(map) {
 let input = fs.readFileSync("day09/sample1.txt", "utf8").toString();
 let result = day09Part01(input);
 console.log("Part 1 Sample Result", result);
-
-//input = fs.readFileSync('day09/data1.txt', 'utf8').toString();
-//result = day09Part01(input);
-//console.log('Part 1 Result', result); // 42364 too high
+console.log("---------------------------");
+input = fs.readFileSync("day09/data1.txt", "utf8").toString();
+result = day09Part01(input);
+console.log("Part 1 Result", result); // 42364 too high
 //---------------------------------------------------------------
 
 function day09Part02Calculation(data) {}
