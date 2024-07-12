@@ -21,10 +21,10 @@ function day09Part01(data) {
   let result = 0;
 
   let diffTree = generateDiffTrees(map);
-  console.log("Diff Tree", diffTree);
+  //console.log("Diff Tree", diffTree);
 
   diffTree.forEach((diff) => {
-    console.log("Diff", diff);
+    //console.log("Diff", diff);
     let sum = 0;
     diff.forEach((sequence) => {
       sum += sequence[sequence.length - 1];
