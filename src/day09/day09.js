@@ -52,6 +52,7 @@ function generateDiffTrees(map) {
           sequenceMap[i + 1].push(currentDiff);
         }
         if (diffValue === 0) {
+          addNextSequence(sequenceMap);
           diffTree.push(sequenceMap);
           break;
         }
@@ -74,6 +75,8 @@ function addNextSequence(sequenceMap) {
         sequenceMap[row - i - 1][sequenceMap[row - i - 1].length - 1]
     );
   }
+
+  console.log("Updated Sequence Map", sequenceMap);
 }
 
 let input = fs.readFileSync("day09/sample1.txt", "utf8").toString();
