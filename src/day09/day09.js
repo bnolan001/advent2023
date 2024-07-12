@@ -1,4 +1,4 @@
-let fs = require('fs');
+let fs = require("fs");
 
 function parseData(data) {
   const splitData = data.split(/\r?\n/);
@@ -6,7 +6,7 @@ function parseData(data) {
   splitData.forEach((line) => {
     const lineNums = line
       .trim()
-      .split(' ')
+      .split(" ")
       .map((n) => parseInt(n, 10));
 
     mappedData.push([...lineNums]);
@@ -21,15 +21,15 @@ function day09Part01(data) {
   let result = 0;
 
   let diffTree = generateDiffTrees(map);
-  console.log('Diff Tree', diffTree);
+  console.log("Diff Tree", diffTree);
 
   diffTree.forEach((diff) => {
-    console.log('Diff', diff);
+    console.log("Diff", diff);
     let sum = 0;
     diff.forEach((sequence) => {
       sum += sequence[sequence.length - 1];
     });
-    console.log('Sum', sum);
+    console.log("Sum", sum);
     result += sum;
   });
 
@@ -57,20 +57,20 @@ function generateDiffTrees(map) {
         }
       }
 
-      console.log('Sequence Map', sequenceMap);
+      console.log("Sequence Map", sequenceMap);
     } while (diffValue !== 0);
   }
 
   return diffTree;
 }
 
-let input = fs.readFileSync('day09/sample1.txt', 'utf8').toString();
+let input = fs.readFileSync("day09/sample1.txt", "utf8").toString();
 let result = day09Part01(input);
-console.log('Part 1 Sample Result', result);
+console.log("Part 1 Sample Result", result);
 
-input = fs.readFileSync('day09/data1.txt', 'utf8').toString();
-result = day09Part01(input);
-console.log('Part 1 Result', result); // 42364 too high
+//input = fs.readFileSync('day09/data1.txt', 'utf8').toString();
+//result = day09Part01(input);
+//console.log('Part 1 Result', result); // 42364 too high
 //---------------------------------------------------------------
 
 function day09Part02Calculation(data) {}
